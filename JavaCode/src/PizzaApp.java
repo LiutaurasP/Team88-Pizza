@@ -1,3 +1,4 @@
+import javax.print.DocFlavor;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,19 +23,22 @@ public class PizzaApp {
     }
 
     private Connection makeConnection() {
-        String url = "jdbc:mysql:127.0.0.1:3306/pizzeria";
+        Connection conn = null;
+        String db_URL = "jdbc:mysql://localhost/sakila";
         String user = "root";
-        String password = "qGan94+60";
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                return DriverManager.getConnection(url, user, password);
-            } catch (SQLException | ClassNotFoundException ex) {
-
-                System.out.println("SQLException: " + ex.getMessage());
-
-            }
-            return null;
-
+        String pass = "liupaddb";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(db_URL,user,pass);
+        } catch (SQLException ex) {
+// handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return conn;
     }
 
     private void getInputs() {
