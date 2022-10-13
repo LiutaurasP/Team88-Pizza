@@ -42,17 +42,28 @@ public class PizzaApp {
 
     private void getInputs() throws SQLException {
 
+        System.out.println("Welcome to our pizzeria!");
+        System.out.println("UI:\n 1 Make an order" +
+                              "\n 2 Menu" +
+                              "\n 3 Cancel order" +
+                              "\n 4 Add item to basket" +
+                              "\n 5 Get ingredients / Vegetarian?" +
+                              "\n 9 Close app" +
+                              "\n -----------------");
         orderloop:
         while(!ordered){
-            System.out.println("Welcome to our pizzeria!");
-            System.out.println("UI:\n 1 Make an order" +
-                                  "\n 2 Menu" +
-                                  "\n 3 Cancel order" +
-                                  "\n 4 Add item to basket" +
-                                  "\n 5 Get ingredients / Vegetarian?" +
-                                  "\n 0 Close app");
+            System.out.println("To remind about possible UI choices press 0.");
+            System.out.println("Waiting for input...");
             int choise = scanner.nextInt();
             switch (choise){
+                case 0:
+                    System.out.println("UI:\n 1 Make an order" +
+                            "\n 2 Menu" +
+                            "\n 3 Cancel order" +
+                            "\n 4 Add item to basket" +
+                            "\n 5 Get ingredients / Vegetarian?" +
+                            "\n 9 Close app" +
+                            "\n -----------------");
                 case 1:
                     makeOrder();
                     break;
@@ -69,7 +80,7 @@ public class PizzaApp {
                 case 5:
                     System.out.println("For which dish do you want to check ingredients?");
                     printIngredients(scanner.nextInt());
-                case 0:
+                case 9:
                     closeApp();
                     break orderloop;
             }
