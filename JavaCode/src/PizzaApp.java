@@ -7,13 +7,13 @@ public class PizzaApp {
     Scanner scanner = new Scanner(System.in);
     boolean ordered = false;
     Connection connection;
-    ArrayList <Item> basket;
+    ArrayList basket;
     PizzaApp() throws SQLException {
         setUp();
-        basket = new ArrayList<Item>();
+        basket = new ArrayList<Integer>();
     }
     public static void main(String[] args) throws SQLException {
-        PizzaApp APP = new PizzaApp();
+        new PizzaApp();
     }
 
     private void setUp() throws SQLException {
@@ -45,11 +45,12 @@ public class PizzaApp {
         orderloop:
         while(!ordered){
             System.out.println("Welcome to our pizzeria!");
-            System.out.println("UI:\n1 Make an order" +
-                                 "\n 2 Menu" +
-                                 "\n 3 Cancel order" +
-                                 "\n 4 Add item to basket" +
-                                 "\n 0 Close app");
+            System.out.println("UI:\n 1 Make an order" +
+                                  "\n 2 Menu" +
+                                  "\n 3 Cancel order" +
+                                  "\n 4 Add item to basket" +
+                                  "\n 5 Get ingredients / Vegetarian?" +
+                                  "\n 0 Close app");
             int choise = scanner.nextInt();
             switch (choise){
                 case 1:
@@ -62,8 +63,12 @@ public class PizzaApp {
                     cancelOrder();
                     break;
                 case 4:
-                    addItemToBasket();
+                    System.out.println("Which item(id's) do you want to add to your basket?");
+                    addItemToBasket(scanner.nextInt());
                     break;
+                case 5:
+                    System.out.println("For which dish do you want to check ingredients?");
+                    printIngredients(scanner.nextInt());
                 case 0:
                     closeApp();
                     break orderloop;
@@ -73,10 +78,8 @@ public class PizzaApp {
         closeApp();
     }
 
-    private void addItemToBasket() {
-        System.out.println("Which items(id's) do you want to add to your basket?");
-        int itemID = scanner.nextInt();
-
+    private void addItemToBasket(int item_id) {
+        basket.add(item_id);
 
     }
 
@@ -84,16 +87,36 @@ public class PizzaApp {
         //TODO: TAKE OUT THE ORDER FROM DATABASE
     }
 
+    private void printIngredients(int recipe_id) throws SQLException {
+        boolean vegetarian = true;
+        String QUERY =  "SELECT ingredient_name, vegetarian FROM ingredients a " +
+                        "INNER JOIN recipe b " +
+                        "ON a.ingredient_id = b.ingredient_id " +
+                        "WHERE recipe_id = ? ";
+        PreparedStatement st = connection.prepareStatement(QUERY);
+        st.setString(1, String.valueOf(recipe_id));
+        ResultSet ingredients = st.executeQuery(QUERY);
+        System.out.println("INGREDIENTS:");
+        while (ingredients.next()){
+            System.out.println("-"+ingredients.getString(1));
+            if(ingredients.getString(2)=="0") vegetarian = false;
+        }
+        if(vegetarian){
+            System.out.println("This dish IS vegetarian.");
+            return;
+        }
+        System.out.println("This dish IS NOT vegetarian.");
+    }
 
     private void printMenu() throws SQLException {
         String QUERY = "SELECT item_id, name FROM item";
-
         System.out.println("MENU: ");
         Statement st = connection.createStatement();
         ResultSet menu = st.executeQuery(QUERY);
         while (menu.next()){
             System.out.print(menu.getString(1)+" "+menu.getString(2));
         }
+        System.out.println("If you would like to know about ingredients of a dish, type 5.");
     }
 
     private void makeOrder() {

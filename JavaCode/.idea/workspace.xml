@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c8aa618d-6bf4-4a4b-a182-02d19520de99" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JavaCode/PizzaApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JavaCode/PizzaApp.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PizzaApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PizzaApp.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +84,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1665664471638</updated>
-      <workItem from="1665664472970" duration="10330000" />
+      <workItem from="1665664472970" duration="13542000" />
     </task>
     <servers />
   </component>
