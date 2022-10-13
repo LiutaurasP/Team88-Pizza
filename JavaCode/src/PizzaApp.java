@@ -1,24 +1,23 @@
 import javax.print.DocFlavor;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PizzaApp {
     Scanner scanner = new Scanner(System.in);
     boolean ordered = false;
+    Connection connection;
     ArrayList <Item> basket;
-    PizzaApp(){
+    PizzaApp() throws SQLException {
         setUp();
         basket = new ArrayList<Item>();
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         PizzaApp APP = new PizzaApp();
     }
 
-    private void setUp() {
-        makeConnection();
+    private void setUp() throws SQLException {
+        this.connection = makeConnection();
         getInputs();
     }
 
@@ -41,7 +40,7 @@ public class PizzaApp {
         return conn;
     }
 
-    private void getInputs() {
+    private void getInputs() throws SQLException {
 
         orderloop:
         while(!ordered){
@@ -75,7 +74,7 @@ public class PizzaApp {
     }
 
     private void addItemToBasket() {
-        System.out.println("Which item(id) do you want to add to your basket?");
+        System.out.println("Which items(id's) do you want to add to your basket?");
         int itemID = scanner.nextInt();
 
 
@@ -85,9 +84,16 @@ public class PizzaApp {
         //TODO: TAKE OUT THE ORDER FROM DATABASE
     }
 
-    private void printMenu() {
-        //TODO: MENU FROM DATABASE
+
+    private void printMenu() throws SQLException {
+        String QUERY = "SELECT item_id, name FROM item";
+
         System.out.println("MENU: ");
+        Statement st = connection.createStatement();
+        ResultSet menu = st.executeQuery(QUERY);
+        while (menu.next()){
+            System.out.print(menu.getString(1)+" "+menu.getString(2));
+        }
     }
 
     private void makeOrder() {
