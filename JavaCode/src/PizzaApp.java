@@ -9,8 +9,8 @@ public class PizzaApp {
     Connection connection;
     ArrayList basket;
     PizzaApp() throws SQLException {
-        setUp();
         basket = new ArrayList<Integer>();
+        setUp();
     }
     public static void main(String[] args) throws SQLException {
         new PizzaApp();
@@ -51,7 +51,7 @@ public class PizzaApp {
                               "\n 9 Close app" +
                               "\n -----------------");
         orderloop:
-        while(!ordered){
+        while(true){
             System.out.println("To remind about possible UI choices press 0.");
             System.out.println("Waiting for input...");
             int choise = scanner.nextInt();
@@ -75,10 +75,12 @@ public class PizzaApp {
                     break;
                 case 4:
                     System.out.println("Which item(id's) do you want to add to your basket?");
+                    System.out.println("Waiting for input...");
                     addItemToBasket(scanner.nextInt());
                     break;
                 case 5:
                     System.out.println("For which dish do you want to check ingredients?");
+                    System.out.println("Waiting for input...");
                     printIngredients(scanner.nextInt());
                 case 9:
                     closeApp();
@@ -89,7 +91,14 @@ public class PizzaApp {
         closeApp();
     }
 
-    private void addItemToBasket(int item_id) {
+    private void addItemToBasket(int item_id) throws SQLException {
+        String QUERY =  "SELECT item_id FROM  item " +
+                        "WHERE item_id = (?) ";
+        PreparedStatement st = connection.prepareStatement(QUERY);
+        st.setString(1, String.valueOf(item_id));
+        ResultSet itemName = st.executeQuery();
+        System.out.println("1 " + itemName.getString(1) + "added.");
+
         basket.add(item_id);
 
     }
@@ -101,12 +110,12 @@ public class PizzaApp {
     private void printIngredients(int recipe_id) throws SQLException {
         boolean vegetarian = true;
         String QUERY =  "SELECT ingredient_name, vegetarian FROM ingredients a " +
-                        "INNER JOIN recipe b " +
+                        "JOIN recipe b " +
                         "ON a.ingredient_id = b.ingredient_id " +
-                        "WHERE recipe_id = ? ";
+                        "WHERE recipe_id = (?) ";
         PreparedStatement st = connection.prepareStatement(QUERY);
         st.setString(1, String.valueOf(recipe_id));
-        ResultSet ingredients = st.executeQuery(QUERY);
+        ResultSet ingredients = st.executeQuery();
         System.out.println("INGREDIENTS:");
         while (ingredients.next()){
             System.out.println("-"+ingredients.getString(1));
@@ -131,11 +140,16 @@ public class PizzaApp {
     }
 
     private void makeOrder() {
-        getAddress();
-        //TODO: SEND ORDER TO DATABASE
+        if (basket.isEmpty()){
+            System.out.println("Your basket is empty!");
+            return;
+        }
+        System.out.println("Enter the post code: ");
+        int postCode = scanner.nextInt();
+        System.out.println("Enter the house number: ");
+        int houseNumber = scanner.nextInt();
 
-    }
-    private void getAddress(){
+        //TODO: SEND ORDER TO DATABASE
 
     }
 
