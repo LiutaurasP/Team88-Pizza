@@ -28,7 +28,7 @@ public class PizzaApp {
         Connection conn = null;
         String db_URL = "jdbc:mysql://localhost/pizzeria";
         String user = "root";
-        String pass = "liupaddb";
+        String pass = "qGan94+60";
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(db_URL,user,pass);
@@ -158,20 +158,21 @@ public class PizzaApp {
             int postCode = scanner.nextInt();
             insertCustomer.setInt(1,postCode);
             System.out.println("Enter the adress: ");
-            String adress = scanner.next();
+            String adress = scanner.nextLine();
             insertCustomer.setString(2, adress);
             System.out.println("Enter the name: ");
-            String name = scanner.next();
+            String name = scanner.nextLine();
             insertCustomer.setString(3, name);
             System.out.println("Enter the phone number: ");
-            int phoneNumber = scanner.nextInt();
-            insertCustomer.setInt(4, phoneNumber);
+            String phoneNumber = scanner.nextLine();
+            insertCustomer.setString(4, (phoneNumber));
             insertCustomer.execute();
             ResultSet topId = stId.executeQuery(getID);
             topId.next();
             customerID = topId.getInt(1);
             customerToCode.setString(1,String.valueOf(customerID));
             customerToCode.execute();
+            getAmountOfPizzas();
             System.out.println("Your customer ID is: " + topId.getString(1));
             if(this.amountOfPizzas>=10){
                 String CODEINSERT = "INSERT INTO code ('code') VALUES (?) WHERE customer_id = (?)";
@@ -236,6 +237,22 @@ public class PizzaApp {
         }
         System.out.println("This dish IS NOT vegetarian.");
     }
+
+    private int getAmountOfPizzas() throws SQLException {
+        String ISITPIZZA = "SELECT pizza FROM item WHERE item_id = (?)";
+        PreparedStatement isItPizza = connection.prepareStatement(ISITPIZZA);
+        int amountOfPizzas=0;
+        //TODO: CHECK AMOUNT OF PIZZAS HERE (IF MORE THAN ONE INGREDIENT)
+        for (Integer integer : basket) {
+            this.isPizza = false;
+            isItPizza.setInt(1,integer);
+            ResultSet rs = isItPizza.executeQuery();
+            rs.next();
+            if(rs.getBoolean(1)) amountOfPizzas++;
+
+        }
+        return amountOfPizzas;
+    }
     private double calculateBasket() throws SQLException {
         double basketSum=0;
         int amountOfPizzas=0;
@@ -289,26 +306,18 @@ public class PizzaApp {
     }
     private void updatePizzaQuantity(int customerID) throws SQLException {
         String QUERY = "SELECT pizzas_ordered FROM customer WHERE customer_id = (?) ";
-        String CUSTOMERINSERT = "INSERT INTO promocode ('customer_id') VALUES (?)";
-        String CODEINSERT = "INSERT INTO code ('code') VALUES (?) WHERE customer_id = (?)";
+        String UPDATEPIZZA = "UPDATE customer SET pizzas_ordered = (?) WHERE (customer_id = (?))";
         PreparedStatement st = connection.prepareStatement(QUERY);
         st.setInt(1,customerID);
-        PreparedStatement insertCustomer = connection.prepareStatement(CUSTOMERINSERT);
-        PreparedStatement insertCode = connection.prepareStatement(CODEINSERT);
+        PreparedStatement updatePizza = connection.prepareStatement(UPDATEPIZZA);
         ResultSet pizzasOrdered = st.executeQuery();
-        insertCustomer.setString(1,String.valueOf(customerID));
         pizzasOrdered.next();
-        int noOfPizzas = pizzasOrdered.getInt(1);
+        int noOfPizzas = Integer.valueOf(pizzasOrdered.getInt(1));
+        System.out.println(noOfPizzas);
+        int newPizzaAmount = Integer.valueOf(noOfPizzas) + Integer.valueOf(getAmountOfPizzas());
+        updatePizza.setInt(1, Integer.valueOf(newPizzaAmount));
+        updatePizza.setInt(2, customerID);
+        updatePizza.execute();
 
-        if (noOfPizzas >= 10) {
-            float promoCode = Math.round(Math.random()*10000);
-            insertCode.setString(1,String.valueOf(promoCode));
-            insertCode.setString(2,String.valueOf(customerID));
-            insertCustomer.executeQuery(CUSTOMERINSERT);
-            insertCode.executeQuery(CODEINSERT);
-            System.out.println("You get a promo code! Your code is: " + promoCode);
-            System.out.println("Your customer_id is: " + customerID);
-
-        }
     }
 }
